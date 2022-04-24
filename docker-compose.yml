@@ -1,0 +1,59 @@
+version: "3.7"
+
+services:  
+  mfe-auth-module:
+    container_name: mfe-auth-module
+    build: 
+      context: ./mfe-auth
+      # args: [ "API_URL='https://variable-environment.prd-docker-compose.com.br'" ]
+    networks:
+      - local-network
+    # ports:
+    #   - 5200:4200
+    environment:
+      - ENVIRONMENT=production
+      - API_URL='https://variable-environment.prd-docker-compose-env.com.br'
+
+  mfe-advisor-module:
+    container_name: mfe-advisor-module
+    build:  
+      context: ./mfe-advisor
+    networks:
+      - local-network
+    # ports:
+  #   - 5201:4200
+    environment:
+      - ENVIRONMENT=production
+      - API_URL="https://variable-environment.prd.com.br"
+
+
+  mfe-customer-module:
+    container_name: mfe-customer-module
+    build:  
+      context: ./mfe-customer
+    networks:
+      - local-network
+    # ports:
+    #   - 5202:4200
+    environment:
+      - ENVIRONMENT=production
+      - API_URL="https://variable-environment.prd.com.br"
+
+
+  mfe-nginx-orchestrator:
+    container_name: mfe-nginx-orchestrator
+    build:   
+      context: ./nginx
+    volumes:
+      - ./assets:/var/www
+    ports:
+      - "80:80"
+    networks:
+      - local-network
+    depends_on:
+      - mfe-auth-module
+      - mfe-advisor-module
+      - mfe-customer-module
+
+networks:
+  local-network:
